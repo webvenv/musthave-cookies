@@ -3,15 +3,14 @@
 '''
 Musthave-Cookies is a CLI tool that allows you to quickly identify which cookies are actually required by the server to maintain session state, access authenticated resources, or avoid redirection/denial responses.
 
-Usage: python3 musthave_cookies.py request.txt 
+Usage: python3 mhcookies.py request.txt 
 '''
 
-
-import time
 import requests
+import sys
+import time
 from http.cookies import SimpleCookie
 from urllib.parse import urlparse
-import sys
 
 
 class Colors:
@@ -36,7 +35,7 @@ def colorize_status(status_code):
 
 
 def format_server_response(content_length, status_code, label="Server Response"):
-    return f"{label.ljust(35)} [cl={str(content_length).rjust(6)}] [{colorize_status(status_code)}]"
+    return f"{label.ljust(70)} [cl={str(content_length).rjust(6)}] [{colorize_status(status_code)}]"
 
 
 def parse_request_file(filepath):
@@ -77,7 +76,6 @@ def display_cookie_names(cookies):
     index_width = len(str(len(cookies)))
     for index, cookie_name in enumerate(cookies.keys(), 1):
         print(f"{str(index).rjust(index_width)}. {cookie_name}")
-    print()
 
 
 def send_request(method, url, headers, body, cookies_subset):
@@ -91,44 +89,60 @@ def send_request(method, url, headers, body, cookies_subset):
     return response.status_code, len(response.content)
 
 
-def analyze_cookie_necessity(method, url, headers, body, all_cookies):
-    print("\n Sending Baseline Request...")
-    print("===================================\n")
-    baseline_status, baseline_length = send_request(
-        method, url, headers, body, all_cookies)
-    print(format_server_response(baseline_length,
-          baseline_status, "[Baseline] Server Response"))
+def send_baseline_request(method, url, headers, body, all_cookies):
+    print("\n\n Sending Baseline Request...")
+    print("===================================")
+    status, length = send_request(method, url, headers, body, all_cookies)
+    print(format_server_response(length, status, "[Baseline] Server Response"))
     print("\n")
     time.sleep(2)
+    return status, length
 
-    mandatory_cookies = []
-    cookie_names = list(all_cookies.keys())
 
-    for cookie_name in reversed(cookie_names):
-        test_cookies = all_cookies.copy()
-        del test_cookies[cookie_name]
-        status, content_length = send_request(
-            method, url, headers, body, test_cookies)
-        label = f"Removing cookie: {cookie_name}"
-        print(format_server_response(content_length, status, label))
-        if status != baseline_status:
-            mandatory_cookies.append(cookie_name)
+def test_each_cookie(method, url, headers, body, all_cookies, baseline_status):
+    musthave = []
+    for name in reversed(list(all_cookies.keys())):
+        test_set = all_cookies.copy()
+        del test_set[name]
+        test_status, test_length = send_request(
+            method, url, headers, body, test_set)
+        label = f"Removing cookie: {name}"
+        print(format_server_response(test_length, test_status, label))
+        if test_status != baseline_status:
+            musthave.append(name)
+    return musthave
 
+
+def print_mandatory_cookies(mandatory_cookies):
     print("\n\n Mandatory (Must-have) Cookies")
     print("===================================\n")
-    for cookie in mandatory_cookies:
-        print(f"+ {cookie}")
+    if mandatory_cookies:
+        for cookie in mandatory_cookies:
+            print(f"+ {cookie}")
+    else:
+        print("  (None) — No individual cookie affected the response.\n")
+        print("  This may indicate that the endpoint is publicly accessible,")
+        print("  that session validation occurs elsewhere (...or the endpoint is very insecure 😅).\n")
 
 
 def main():
     if len(sys.argv) != 2:
-        print("Usage: python3 musthave_cookies.py request.txt")
+        print("Usage: python3 mhcookies.py request.txt")
         sys.exit(1)
 
-    request_file_path = sys.argv[1]
-    method, url, headers, body, cookies = parse_request_file(request_file_path)
+    request_file = sys.argv[1]
+
+    method, url, headers, body, cookies = parse_request_file(request_file)
+
     display_cookie_names(cookies)
-    analyze_cookie_necessity(method, url, headers, body, cookies)
+
+    baseline_status, baseline_length = send_baseline_request(
+        method, url, headers, body, cookies)
+
+    mandatory_cookies = test_each_cookie(
+        method, url, headers, body, cookies, baseline_status)
+
+    print_mandatory_cookies(mandatory_cookies)
 
 
 if __name__ == "__main__":
