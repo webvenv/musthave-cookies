@@ -2,7 +2,11 @@
 
 Musthave Cookies is a CLI tool that allows you to quickly identify which cookies are actually required by the server to maintain session state, access authenticated resources, or avoid redirection/denial responses.
 
-![Title Image](images/banner_mhcookies.png)
+<p align="center">
+  <img src="images/banner_mhcookies.png" width="700"/>
+  <br/>
+  <em>Musthave Cookies — Identify the cookies that actually matter</em>
+</p>
 
 
 
