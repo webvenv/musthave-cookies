@@ -91,3 +91,24 @@ python3 mhcookies.py request.txt
 ## Example Output
 
 ![Usage Example](images/usage-example_mhcookies.png)
+
+
+## Questions & Answers
+
+*Wait, couldn't I just do this manually?*
+
+Absolutely! And sometimes that might even be faster. 
+But I've found that most of the time, it isn't.
+
+---
+
+*Why not just grep for session cookies by name? I've already memorized which cookies are important.*
+
+You could, and that's awesome! But that only tells you what looks important. Musthave Cookies tells you what’s actually enforced by the server, regardless of naming convention.
+
+---
+
+*Can’t Burp Suite already do this?*
+
+Yes — sort of. You can manually remove cookies in Repeater or use Burp macros/scripts. But Musthave Cookies automates the entire process and gives you a clean, aligned output with no setup required.
+
