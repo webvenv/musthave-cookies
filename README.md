@@ -16,7 +16,7 @@ When testing a new application, you’re often overwhelmed with 50+ cookies.
 
 This tool helps you immediately answer:
 
-    Which cookies does the server actually depend on for this endpoint?
+**Which cookies does the server actually depend on for this endpoint?**
 
 Musthave Cookies systematically removes one cookie at a time and measures server response changes (status code + content length) to identify the minimum set of cookies required to maintain access.
 
@@ -52,21 +52,10 @@ python3 mhcookies.py request.txt
 GET /path/endpoint?param=value HTTP/1.1
 Host: sub.domain.com
 Cookie: session-id=123-456; abcd-id=261-4866016; lc-acbae=en_US; sid="abcdefghijklmopqrstuvwxyz|1234567"; session-id-time=2379336985l; session-token="123-456-789"; x-acbae="a1b2c3d4e5f6g7"; at-acbae=ABC123DEF456; sess-at-acbae="0987654321zyxwuvt"; sst-acbae=5555-5555
-Cache-Control: max-age=0
 Accept-Language: en-US,en;q=0.9
-Upgrade-Insecure-Requests: 1
 User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36
 Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7
-Sec-Fetch-Site: cross-site
-Sec-Fetch-Mode: navigate
-Sec-Fetch-User: ?1
-Sec-Fetch-Dest: document
-Sec-Ch-Ua: "Not.A/Brand";v="99", "Chromium";v="136"
-Sec-Ch-Ua-Mobile: ?0
-Sec-Ch-Ua-Platform: "Linux"
 Referer: https://sub.domain.com/
-Accept-Encoding: gzip, deflate, br
-Priority: u=0, i
 Connection: keep-alive
 ```
 
@@ -76,21 +65,21 @@ Connection: keep-alive
 python3 mhcookies.py request.txt
 ```
 
-    
-## Use Cases
-
-+ Reduce noise when testing high-cookie apps
-+ Quickly find session dependencies
-+ Detect session fixation or fallback behaviors
-+ Build automation pipelines with minimal cookie state
-+ Clean up Burp/Intruder/ffuf payloads
-
-
-
-
 ## Example Output
 
 ![Usage Example](images/usage-example_mhcookies.png)
+
+
+## Use Cases
+
+I've found this tool especially useful when performing access control tests. It only takes a moment to paste the request into a text file and run the tool. Afterward, you'll know exactly which cookies are being processed by the server for that endpoint.
+
+**Technical Use Cases:**
+
++ Reduce noise when testing
++ Quickly find session dependencies
++ Detect session fixation or fallback behaviors
++ Build automation pipelines with minimal cookie state
 
 
 ## Questions & Answers
@@ -112,3 +101,9 @@ You could, and that's awesome! But that only tells you what looks important. Mus
 
 Yes — sort of. You can manually remove cookies in Repeater or use Burp macros/scripts. But Musthave Cookies automates the entire process and gives you a clean, aligned output with no setup required.
 
+---
+
+
+>"Here’s to the cookies that matter, the ones that don’t, and the server that always tells the truth."
+
+Thank you for your time, and good luck, everyone!
